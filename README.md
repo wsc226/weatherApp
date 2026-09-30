@@ -23,14 +23,19 @@ ES modules need an HTTP server; opening `index.html` directly from disk will not
 | `js/scene.js` | Canvas animation: clouds, rain, snow, fog, lightning, wind arrow |
 | `js/timeline.js` | Reusable play/pause/step/speed scrubber |
 | `js/waterCycle.js` | SVG concept animation with stage-by-stage captions |
+| `js/map.js`, `js/config.js` | Leaflet map: click-to-select, temperature and wind grid layers; tile provider settings |
+| `js/vendor/leaflet/` | Leaflet 1.9.4 (BSD-2-Clause), served from this repo |
 | `js/main.js` | Wires the pieces together |
+| `assets/images/` | Artwork (generated from `docs/IMAGE_PROMPTS.md`) |
+| `docs/IMAGE_PROMPTS.md` | Prompts for Nano Banana 2 / ChatGPT artwork |
 | `lessons/index.json` | Lesson catalog (content to be authored) |
 | `docs/STYLE_GUIDE.md` | Tone and scaffolding rules for all content |
 
 ## Roadmap
 - Author the first lessons (weather vs. climate, reading the sky, predict and verify, El Niño/La Niña, weather and food).
 - Historical data tools (climate normals, ONI index).
-- Map component and radar loops (US NWS/NOAA, Environment Canada; may need a small proxy for CORS).
+- Radar loops on the map (US NWS/NOAA, Environment Canada; may need a small proxy for CORS).
+- Replace placeholder visuals with generated artwork.
 - Optional official alerts as a case study (NWS and Environment Canada CAP feeds).
 
 ## Data notes

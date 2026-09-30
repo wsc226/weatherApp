@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Weatherman Chan</title>
   <meta name="description" content="Learn weather science with live data and animations.">
+  <link rel="stylesheet" href="js/vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -31,6 +32,21 @@
         </fieldset>
       </div>
       <p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="map-h">
+      <h2 id="map-h">Map</h2>
+      <p class="fine">Click the map to choose a place. Use the layer menu to compare temperature or wind across the area you are viewing.</p>
+      <div class="row">
+        <label for="layer">Layer</label>
+        <select id="layer">
+          <option value="off">None</option>
+          <option value="temp">Temperature</option>
+          <option value="wind">Wind (arrows show where air is moving)</option>
+        </select>
+        <span id="map-status" role="status" aria-live="polite" class="fine"></span>
+      </div>
+      <div id="map" role="application" aria-label="Interactive map. Use arrow keys to pan and plus or minus to zoom. To choose a place by name, use the search box above."></div>
     </section>
 
     <section class="panel" aria-labelledby="now-h">
@@ -73,6 +89,7 @@
     <p>No accounts. No tracking. Settings stay in your browser.</p>
   </footer>
 
+  <script src="js/vendor/leaflet/leaflet.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

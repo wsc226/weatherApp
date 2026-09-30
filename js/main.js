@@ -14,9 +14,29 @@ const DEFAULT_PLACE = { name: 'Washington', region: 'District of Columbia, Unite
 let place = store.get('place', DEFAULT_PLACE);
 let units = store.get('units', 'metric');
 let fc = null;
+let mapPan = false; // first load: keep the default continental view instead of zooming in
 
 const scene = new WeatherScene($('scene'));
 const status = msg => { $('status').textContent = msg; };
+
+// The map is an enhancement: if Leaflet or its tiles are blocked, the rest of the app still works.
+let map = null;
+try {
+  const { WeatherMap } = await import('./map.js');
+  map = new WeatherMap($('map'), {
+    onStatus: m => { $('map-status').textContent = m; },
+    onPick: ({ lat, lon }) => {
+      place = { name: `${lat.toFixed(2)}, ${lon.toFixed(2)}`, region: 'point selected on the map', lat, lon };
+      store.set('place', place);
+      mapPan = false; // the user is already looking at this spot
+      load();
+    },
+  });
+  $('layer').addEventListener('change', e => map.setMode(e.target.value));
+} catch (err) {
+  $('map').textContent = 'The map could not be loaded. You can still search for a place above.';
+  $('layer').disabled = true;
+}
 
 const timeline = new Timeline({
   range: $('tl-range'), play: $('tl-play'), back: $('tl-back'), fwd: $('tl-fwd'), speed: $('tl-speed'),
@@ -57,6 +77,8 @@ function render(i) {
 
 async function load() {
   $('place-name').textContent = place.name;
+  map?.setPlace(place.lat, place.lon, mapPan);
+  mapPan = true;
   status('Loading weather…');
   try {
     fc = await getForecast(place.lat, place.lon);
@@ -91,7 +113,7 @@ $('search').addEventListener('submit', async e => {
 
 document.querySelectorAll('input[name=units]').forEach(r => {
   r.checked = r.value === units;
-  r.addEventListener('change', () => { units = r.value; store.set('units', units); render(timeline.i); });
+  r.addEventListener('change', () => { units = r.value; store.set('units', units); render(timeline.i); map?.setUnits(units); });
 });
 
 async function loadLessons() {

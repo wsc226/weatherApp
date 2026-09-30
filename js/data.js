@@ -45,6 +45,37 @@ export async function getForecast(lat, lon) {
   return getJSON(`${FORECAST}?${p}`);
 }
 
+// Current conditions on an n x n grid inside a map's bounds, in ONE request (Open-Meteo accepts
+// comma-separated coordinate lists). Coordinates are rounded so repeat views hit the cache.
+export function gridPoints(b, n = 6) {
+  const south = Math.max(-85, b.south), north = Math.min(85, b.north), pts = [];
+  const span = b.east - b.west >= 360 ? 360 : b.east - b.west;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const lat = south + (north - south) * (i + 0.5) / n;
+      let lon = b.west + span * (j + 0.5) / n;
+      lon = ((lon + 540) % 360) - 180; // wrap into [-180, 180)
+      pts.push({ lat: +lat.toFixed(1), lon: +lon.toFixed(1) });
+    }
+  }
+  return pts;
+}
+
+export async function getGrid(pts) {
+  const p = new URLSearchParams({
+    latitude: pts.map(q => q.lat).join(','), longitude: pts.map(q => q.lon).join(','),
+    current: 'temperature_2m,wind_speed_10m,wind_direction_10m', timezone: 'UTC',
+  });
+  const json = await getJSON(`${FORECAST}?${p}`);
+  const arr = Array.isArray(json) ? json : [json];
+  return arr.map((r, i) => ({ ...pts[i], temp: r.current.temperature_2m, wind: r.current.wind_speed_10m, dir: r.current.wind_direction_10m }));
+}
+
+// Offline stand-in: warm toward the equator, westerly wind. Clearly labelled as demo in the UI.
+export function demoGrid(pts) {
+  return pts.map(q => ({ ...q, temp: 30 - Math.abs(q.lat) * 0.6, wind: 15, dir: 270 }));
+}
+
 // Index of the last hourly step at or before "now" (ISO strings sort lexicographically).
 export function currentHourIndex(fc) {
   const times = fc.hourly.time;
