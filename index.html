@@ -5,14 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Weatherman Chan</title>
   <meta name="description" content="Learn weather science with live data and animations.">
+  <meta name="theme-color" content="#0f2436">
+  <link rel="preload" href="assets/fonts/source-sans-3.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="js/vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
-    <h1>Weatherman Chan</h1>
-    <p class="tagline">Learn the science of weather with real, live data.</p>
+    <div class="wrap">
+      <p class="eyebrow">Weather science lab</p>
+      <h1>Weatherman Chan</h1>
+      <p class="tagline">Learn the science of weather with real, live data.</p>
+    </div>
   </header>
 
   <main id="main">
@@ -35,6 +41,7 @@
     </section>
 
     <section class="panel" aria-labelledby="map-h">
+      <p class="eyebrow">Explore</p>
       <h2 id="map-h">Map</h2>
       <p class="fine">Click the map to choose a place. Use the layer menu to compare temperature or wind across the area you are viewing.</p>
       <div class="row">
@@ -50,6 +57,7 @@
     </section>
 
     <section class="panel" aria-labelledby="now-h">
+      <p class="eyebrow">Live data</p>
       <h2 id="now-h">Weather at <span id="place-name">…</span></h2>
       <div class="scene-wrap">
         <canvas id="scene" aria-hidden="true"></canvas>
@@ -74,11 +82,13 @@
     </section>
 
     <section class="panel" aria-labelledby="wc-h">
-      <h2 id="wc-h">Concept animation: the water cycle</h2>
+      <p class="eyebrow">Concept animation</p>
+      <h2 id="wc-h">The water cycle</h2>
       <div id="water-cycle"></div>
     </section>
 
     <section class="panel" aria-labelledby="lessons-h">
+      <p class="eyebrow">Learn</p>
       <h2 id="lessons-h">Lessons</h2>
       <ul id="lessons" class="cards"></ul>
     </section>

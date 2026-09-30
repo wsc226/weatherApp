@@ -26,6 +26,7 @@ ES modules need an HTTP server; opening `index.html` directly from disk will not
 | `js/map.js`, `js/config.js` | Leaflet map: click-to-select, temperature and wind grid layers; tile provider settings |
 | `js/vendor/leaflet/` | Leaflet 1.9.4 (BSD-2-Clause), served from this repo |
 | `js/main.js` | Wires the pieces together |
+| `assets/fonts/` | Source Serif 4 and Source Sans 3 (SIL OFL), self-hosted |
 | `assets/images/` | Artwork (generated from `docs/IMAGE_PROMPTS.md`) |
 | `docs/IMAGE_PROMPTS.md` | Prompts for Nano Banana 2 / ChatGPT artwork |
 | `lessons/index.json` | Lesson catalog (content to be authored) |

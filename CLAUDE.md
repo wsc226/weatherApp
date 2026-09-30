@@ -10,6 +10,10 @@ Weather-science learning app for **secondary students (US, Canada; English)**. O
 - **Honesty about data.** Forecasts are model estimates. Show units, source, and update time. Never present the app as an official warning source.
 - Set text with `textContent` (or build DOM nodes), not `innerHTML` with API data.
 
+## Visual design
+- Fonts: Source Serif 4 (headings) + Source Sans 3 (body, UI, data), self-hosted in `assets/fonts/` (SIL OFL). Never link fonts.googleapis.com.
+- Colors live as tokens on `:root` in `css/style.css` (light + dark). Use tokens, not raw hex. Every text/background pair must reach 4.5:1.
+
 ## Artwork
 The owner has Gemini (Nano Banana 2) and ChatGPT and will generate images. **Do not add cartoonish SVG art.** Write prompts in `docs/IMAGE_PROMPTS.md`, save images to `assets/images/` (WebP, under ~200 KB, no text baked in), and use the current SVG/canvas visuals only as placeholders.
 
