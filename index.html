@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weatherman Chan</title>
+  <meta name="description" content="Learn weather science with live data and animations.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <h1>Weatherman Chan</h1>
+    <p class="tagline">Learn the science of weather with real, live data.</p>
+  </header>
+
+  <main id="main">
+    <section class="panel" aria-labelledby="place-h">
+      <h2 id="place-h">Choose a place</h2>
+      <form id="search" class="row" role="search">
+        <label for="q" class="sr-only">City name</label>
+        <input id="q" type="search" placeholder="Search a city, e.g. Toronto" autocomplete="off" required>
+        <button type="submit">Search</button>
+      </form>
+      <ul id="results" class="results" aria-label="Search results"></ul>
+      <div class="row toggles">
+        <fieldset>
+          <legend class="sr-only">Units</legend>
+          <label><input type="radio" name="units" value="metric" checked> °C, km/h</label>
+          <label><input type="radio" name="units" value="imperial"> °F, mph</label>
+        </fieldset>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="now-h">
+      <h2 id="now-h">Weather at <span id="place-name">…</span></h2>
+      <div class="scene-wrap">
+        <canvas id="scene" aria-hidden="true"></canvas>
+        <div class="scene-label" id="scene-label"></div>
+      </div>
+      <p id="scene-alt" class="sr-only"></p>
+
+      <div class="timeline" id="timeline">
+        <button type="button" id="tl-play" aria-label="Play">▶</button>
+        <button type="button" id="tl-back" aria-label="Back one hour">⏮</button>
+        <button type="button" id="tl-fwd" aria-label="Forward one hour">⏭</button>
+        <input type="range" id="tl-range" min="0" max="0" value="0" aria-label="Hour">
+        <select id="tl-speed" aria-label="Speed">
+          <option value="1200">Slow</option>
+          <option value="600" selected>Normal</option>
+          <option value="250">Fast</option>
+        </select>
+      </div>
+
+      <dl class="readout" id="readout"></dl>
+      <p class="fine" id="updated"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="wc-h">
+      <h2 id="wc-h">Concept animation: the water cycle</h2>
+      <div id="water-cycle"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="lessons-h">
+      <h2 id="lessons-h">Lessons</h2>
+      <ul id="lessons" class="cards"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0). Forecasts are estimates, not official warnings; follow your national weather service for safety alerts.</p>
+    <p>No accounts. No tracking. Settings stay in your browser.</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

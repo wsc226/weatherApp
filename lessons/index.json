@@ -1,0 +1,7 @@
+[
+  { "id": "weather-vs-climate", "title": "Weather vs. climate", "summary": "One hot day or a warming trend? Compare today with the long-term average.", "status": "planned" },
+  { "id": "read-the-sky", "title": "Reading the sky", "summary": "Pressure, wind, and humidity: what the numbers tell you.", "status": "planned" },
+  { "id": "predict-and-verify", "title": "Predict and verify", "summary": "Forecast tomorrow's high, then measure your error.", "status": "planned" },
+  { "id": "enso", "title": "El Niño and La Niña", "summary": "How the Pacific Ocean shapes weather around the world.", "status": "planned" },
+  { "id": "weather-and-food", "title": "Weather and food", "summary": "Rainfall, drought, and the crops that feed us.", "status": "planned" }
+]
