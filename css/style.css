@@ -95,8 +95,8 @@ fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 20px; }
   position: absolute; left: 12px; bottom: 10px; color: #fff; font: 600 1rem var(--sans);
   text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
 }
-.timeline { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
-.timeline input[type=range] { flex: 1; }
+.timeline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.timeline input[type=range] { flex: 1 1 160px; }
 .timeline button { min-width: 44px; padding: 10px; }
 .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 18px 0 0; }
 .readout div { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
@@ -114,6 +114,13 @@ fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 20px; }
 /* Map */
 #map { height: 400px; margin-top: 12px; border-radius: 12px; border: 1px solid var(--line); z-index: 0; }
 .leaflet-container { font-family: var(--sans); }
+.legend { margin-top: 12px; max-width: 420px; }
+.legend-title { margin: 0 0 4px; font-size: .85rem; font-weight: 600; color: var(--muted); }
+.legend-bar { height: 12px; border-radius: 6px; border: 1px solid var(--line); }
+.legend-ticks { position: relative; height: 1.4em; margin-top: 2px; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.legend-ticks span:first-child { transform: none; }
+.legend-ticks span:last-child { transform: translateX(-100%); }
 .mp-wrap { background: none; border: 0; }
 .mp { display: flex; flex-direction: column; align-items: center; font: 600 12px/1.2 var(--sans); color: #13202f; font-variant-numeric: tabular-nums; }
 .mp-t { padding: 4px 6px; border-radius: 6px; border: 1px solid rgba(0, 0, 0, .35); margin: 8px 0; }

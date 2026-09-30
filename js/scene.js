@@ -40,7 +40,13 @@ export class WeatherScene {
     if (!this.running) { this.step(1 / 30, 60); this.draw(); } // static frame for paused / reduced motion
   }
 
-  toggle() { this.running = !this.running; this.last = 0; return this.running; }
+  // Pause or resume continuous motion (WCAG 2.2.2). Returns true when now running.
+  toggle() {
+    this.running = !this.running;
+    this.last = 0;
+    if (!this.running) this.draw();
+    return this.running;
+  }
 
   // Horizontal drift in px/s. Meteorological wind direction is where the wind comes FROM,
   // so wind from the west (270 degrees) pushes things toward +x (east).

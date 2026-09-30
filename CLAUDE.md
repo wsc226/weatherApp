@@ -17,6 +17,13 @@ Weather-science learning app for **secondary students (US, Canada; English)**. O
 ## Artwork
 The owner has Gemini (Nano Banana 2) and ChatGPT and will generate images. **Do not add cartoonish SVG art.** Write prompts in `docs/IMAGE_PROMPTS.md`, save images to `assets/images/` (WebP, under ~200 KB, no text baked in), and use the current SVG/canvas visuals only as placeholders.
 
+## Tests
+- `npm test` (Node's built-in runner, no dependencies) covers `units.js`, `data.js`, and `map.js` pure logic. Run it before every commit; also try `TZ=Pacific/Auckland npm test` when touching time code.
+- Keep browser-only code (DOM, canvas, Leaflet) out of module top level so modules stay importable in Node.
+
+## Rate limits
+Schools share one IP, and Open-Meteo's free tier limits requests per IP. Don't add requests on timers or on every interaction; go through `getJSON` (localStorage cache, stale fallback, 429 message) and keep map grids within `GRID_MAX_POINTS`. Endpoints and cache times live in `js/config.js` so a caching proxy can be swapped in.
+
 ## Environment notes
 - The cloud sandbox proxy blocks Open-Meteo and map tiles, so live data cannot be tested there. The app falls back to demo data (`demoForecast`, `demoGrid`); test UI with that.
 - Headless check: `chrome --headless=new --no-sandbox --virtual-time-budget=6000 --screenshot=out.png http://localhost:8123/`.

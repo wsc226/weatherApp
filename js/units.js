@@ -1,6 +1,13 @@
 // Unit conversion and formatting. Data is stored in metric; convert only for display.
 export const compass = deg => ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round((((deg % 360) + 360) % 360) / 45) % 8];
 
+// Open-Meteo (timezone=auto) returns the PLACE's wall-clock time with no offset, e.g.
+// "2026-09-30T06:00". Format it as-is; parsing it with new Date() would apply the viewer's zone.
+export function wallTime(iso, opts = { weekday: 'short', hour: 'numeric' }) {
+  const [y, mo, d, h, mi] = iso.split(/[-T:]/).map(Number);
+  return new Date(Date.UTC(y, mo - 1, d, h, mi || 0)).toLocaleString('en-US', { ...opts, timeZone: 'UTC' });
+}
+
 export function fmt(units) {
   const imp = units === 'imperial';
   return {

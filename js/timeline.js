@@ -8,7 +8,6 @@ export class Timeline {
     this.timer = null;
     this.i = 0;
     this.n = 0;
-    this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     range.addEventListener('input', () => this.goto(+range.value));
     back.addEventListener('click', () => { this.pause(); this.goto(this.i - 1); });
     fwd.addEventListener('click', () => { this.pause(); this.goto(this.i + 1); });
@@ -30,8 +29,10 @@ export class Timeline {
     this.onChange(this.i);
   }
 
+  // Playback is always user-started and advances in discrete hourly steps, so it stays available
+  // under prefers-reduced-motion (the scene itself shows still frames in that mode).
   play() {
-    if (this.reduced) return; // respect reduced motion: students step manually instead
+    if (this.n < 2) return;
     this.playBtn.textContent = '⏸';
     this.playBtn.setAttribute('aria-label', 'Pause');
     this.timer = setInterval(() => this.goto(this.i + 1 >= this.n ? 0 : this.i + 1), +this.speedSel.value);

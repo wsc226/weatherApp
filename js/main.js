@@ -1,5 +1,5 @@
-import { searchCity, getForecast, demoForecast, currentHourIndex, describeCode } from './data.js';
-import { fmt, compass } from './units.js';
+import { searchCity, getForecast, demoForecast, currentHourIndex, describeCode, pruneCache } from './data.js';
+import { fmt, compass, wallTime } from './units.js';
 import { WeatherScene } from './scene.js';
 import { Timeline } from './timeline.js';
 import { mountWaterCycle } from './waterCycle.js';
@@ -15,15 +15,24 @@ let place = store.get('place', DEFAULT_PLACE);
 let units = store.get('units', 'metric');
 let fc = null;
 let mapPan = false; // first load: keep the default continental view instead of zooming in
+let loadId = 0;     // guards against an older, slower response overwriting a newer place
+let searchId = 0;
 
+pruneCache();
 const scene = new WeatherScene($('scene'));
 const status = msg => { $('status').textContent = msg; };
+
+const sceneBtn = $('scene-toggle');
+const syncSceneBtn = () => { sceneBtn.textContent = scene.running ? 'Pause motion' : 'Play motion'; };
+sceneBtn.addEventListener('click', () => { scene.toggle(); syncSceneBtn(); });
+syncSceneBtn();
 
 // The map is an enhancement: if Leaflet or its tiles are blocked, the rest of the app still works.
 let map = null;
 try {
   const { WeatherMap } = await import('./map.js');
   map = new WeatherMap($('map'), {
+    legend: $('map-legend'),
     onStatus: m => { $('map-status').textContent = m; },
     onPick: ({ lat, lon }) => {
       place = { name: `${lat.toFixed(2)}, ${lon.toFixed(2)}`, region: 'point selected on the map', lat, lon };
@@ -55,8 +64,10 @@ function render(i) {
     windKmh: h.wind_speed_10m[i],
     windFrom: h.wind_direction_10m[i],
   });
-  const when = new Date(h.time[i]).toLocaleString('en-US', { weekday: 'short', hour: 'numeric' });
+  const tz = fc.timezone_abbreviation ? ` ${fc.timezone_abbreviation}` : '';
+  const when = `${wallTime(h.time[i])}${tz}`;
   $('scene-label').textContent = `${when} · ${d.label}`;
+  $('tl-range').setAttribute('aria-valuetext', when);
   $('scene-alt').textContent = `${when}: ${d.label}, ${f.temp(h.temperature_2m[i])}, wind from the ${compass(h.wind_direction_10m[i])} at ${f.wind(h.wind_speed_10m[i])}.`;
   const rows = [
     ['Temperature', f.temp(h.temperature_2m[i])],
@@ -75,30 +86,43 @@ function render(i) {
   }));
 }
 
+function describeSource(data) {
+  if (data.demo) return 'Showing built-in demo data because live data could not be loaded. These are not real conditions.';
+  const at = new Date(data.fetchedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const tz = data.timezone_abbreviation ? ` (${data.timezone_abbreviation})` : '';
+  if (data.stale) return `Showing saved data from ${at} because live data could not be refreshed. Times are local to this place${tz}.`;
+  return `Model data for ${place.region}, retrieved at ${at}. Times are local to this place${tz}. Forecast models update every hour or more, so these are estimates, not sensor readings.`;
+}
+
 async function load() {
+  const id = ++loadId;
   $('place-name').textContent = place.name;
   map?.setPlace(place.lat, place.lon, mapPan);
   mapPan = true;
   status('Loading weather…');
+  let data, msg = '';
   try {
-    fc = await getForecast(place.lat, place.lon);
-    $('updated').textContent = `Model data for ${place.region}. Last checked ${new Date().toLocaleTimeString()}. Forecast models update every few hours, so this is an estimate, not a sensor reading.`;
-    status('');
+    data = await getForecast(place.lat, place.lon);
+    if (data.stale) msg = data.error?.message ?? '';
   } catch (e) {
-    fc = demoForecast();
-    $('updated').textContent = 'Showing built-in demo data because live data could not be loaded.';
-    status(`Could not load live data (${e.message}). Showing demo data.`);
+    data = demoForecast();
+    msg = `${e.message} Showing demo data.`;
   }
+  if (id !== loadId) return; // the student picked another place while this was loading
+  fc = data;
+  status(msg);
+  $('updated').textContent = describeSource(fc);
   timeline.setLength(fc.hourly.time.length, currentHourIndex(fc));
 }
 
 $('search').addEventListener('submit', async e => {
   e.preventDefault();
-  const list = $('results');
+  const id = ++searchId, list = $('results');
   list.replaceChildren();
   status('Searching…');
   try {
     const found = await searchCity($('q').value.trim());
+    if (id !== searchId) return;
     status(found.length ? '' : 'No places found. Try another spelling.');
     for (const p of found) {
       const li = document.createElement('li'), b = document.createElement('button');
@@ -108,7 +132,7 @@ $('search').addEventListener('submit', async e => {
       li.append(b);
       list.append(li);
     }
-  } catch (err) { status(`Search failed (${err.message}).`); }
+  } catch (err) { if (id === searchId) status(`Search failed. ${err.message}`); }
 });
 
 document.querySelectorAll('input[name=units]').forEach(r => {

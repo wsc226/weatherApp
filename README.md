@@ -13,17 +13,28 @@ python3 -m http.server 8000
 
 ES modules need an HTTP server; opening `index.html` directly from disk will not work.
 
+## Tests
+
+```sh
+npm test   # Node 20+; no dependencies to install
+```
+
+## Rate limits (read before a school-wide rollout)
+Everyone in a school usually shares one IP address, and Open-Meteo's free tier limits requests per IP (check their current terms). The app caches responses in the browser, falls back to saved data when the service says "too many requests", and keeps map grids small. For heavy use, set `API` in `js/config.js` to a caching proxy or a paid Open-Meteo endpoint.
+
 ## Layout
 
 | Path | Purpose |
 |---|---|
 | `index.html`, `css/style.css` | Page and styles (light/dark, reduced-motion aware) |
-| `js/data.js` | Open-Meteo geocoding and forecast, 10-minute session cache, offline demo data, weather-code descriptions |
+| `js/data.js` | Open-Meteo geocoding, forecast, and map grid; localStorage cache with stale fallback and rate-limit handling; demo data; weather-code descriptions |
+| `test/` | Unit tests (`npm test`) |
 | `js/units.js` | Metric/imperial formatting and compass directions |
 | `js/scene.js` | Canvas animation: clouds, rain, snow, fog, lightning, wind arrow |
 | `js/timeline.js` | Reusable play/pause/step/speed scrubber |
 | `js/waterCycle.js` | SVG concept animation with stage-by-stage captions |
-| `js/map.js`, `js/config.js` | Leaflet map: click-to-select, temperature and wind grid layers; tile provider settings |
+| `js/map.js` | Leaflet map: click-to-select, temperature (with legend) and wind grid layers |
+| `js/config.js` | Tile provider, API endpoints, cache times, map grid budget |
 | `js/vendor/leaflet/` | Leaflet 1.9.4 (BSD-2-Clause), served from this repo |
 | `js/main.js` | Wires the pieces together |
 | `assets/fonts/` | Source Serif 4 and Source Sans 3 (SIL OFL), self-hosted |

@@ -53,6 +53,7 @@
         </select>
         <span id="map-status" role="status" aria-live="polite" class="fine"></span>
       </div>
+      <div id="map-legend" class="legend" hidden></div>
       <div id="map" role="application" aria-label="Interactive map. Use arrow keys to pan and plus or minus to zoom. To choose a place by name, use the search box above."></div>
     </section>
 
@@ -75,6 +76,7 @@
           <option value="600" selected>Normal</option>
           <option value="250">Fast</option>
         </select>
+        <button type="button" class="ghost" id="scene-toggle">Pause motion</button>
       </div>
 
       <dl class="readout" id="readout"></dl>
