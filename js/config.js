@@ -1,8 +1,13 @@
 // Map basemap. Swap this one object to change tile providers; keep the attribution.
-// Carto's free basemaps are for non-commercial use; check terms before any commercial release.
+// OpenStreetMap's standard tiles need no API key. Their tile usage policy allows light use like
+// a classroom site but not heavy traffic: https://operations.osmfoundation.org/policies/tiles/
+// For a large rollout, move to a provider with a free tier that is domain-restricted
+// (for example Stadia Maps or MapTiler) and update `url` and `attribution` here.
+// (Carto's basemaps, used earlier, now require an API key.)
 export const TILES = {
-  url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+  name: 'OpenStreetMap',
+  url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 10,
 };
 

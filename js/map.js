@@ -29,7 +29,16 @@ export class WeatherMap {
     this.units = 'metric';
     this.req = 0;
     this.map = L.map(el, { worldCopyJump: true }).setView(START_VIEW.center, START_VIEW.zoom);
-    L.tileLayer(TILES.url, { attribution: TILES.attribution, maxZoom: TILES.maxZoom }).addTo(this.map);
+    // Say so when map images fail (blocked network, provider outage, or a provider that now
+    // wants a key) instead of leaving a blank grey box. Reported once per page load.
+    let tileErrorShown = false;
+    L.tileLayer(TILES.url, { attribution: TILES.attribution, maxZoom: TILES.maxZoom })
+      .on('tileerror', () => {
+        if (tileErrorShown) return;
+        tileErrorShown = true;
+        this.onStatus(`Map images from ${TILES.name} could not be loaded. Clicking the map and the weather layers still work.`);
+      })
+      .addTo(this.map);
     this.layer = L.layerGroup().addTo(this.map);
     this.marker = null;
     this.map.on('click', e => {
