@@ -33,7 +33,8 @@ Everyone in a school usually shares one IP address, and Open-Meteo's free tier l
 | `index.html`, `css/style.css` | Page and styles (light/dark, reduced-motion aware) |
 | `js/data.js` | Open-Meteo geocoding, forecast, and map grid; localStorage cache with stale fallback and rate-limit handling; demo data; weather-code descriptions |
 | `test/` | Unit tests (`npm test`) |
-| `js/units.js` | Metric/imperial formatting and compass directions |
+| `js/units.js` | Metric/imperial formatting, compass directions, dew point formula |
+| `js/charts.js` | Linked forecast charts (temperature + dew point, pressure, precipitation) with tooltip, keyboard control, summary, and table view |
 | `js/scene.js` | Canvas animation: clouds, rain, snow, fog, lightning, wind arrow |
 | `js/timeline.js` | Reusable play/pause/step/speed scrubber |
 | `js/waterCycle.js` | SVG concept animation with stage-by-stage captions |

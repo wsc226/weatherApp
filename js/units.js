@@ -8,6 +8,25 @@ export function wallTime(iso, opts = { weekday: 'short', hour: 'numeric' }) {
   return new Date(Date.UTC(y, mo - 1, d, h, mi || 0)).toLocaleString('en-US', { ...opts, timeZone: 'UTC' });
 }
 
+// Numeric conversions for charts (fmt below returns display strings).
+export function conv(units) {
+  const imp = units === 'imperial';
+  return {
+    temp: c => (imp ? c * 9 / 5 + 32 : c),
+    precip: mm => (imp ? mm / 25.4 : mm),
+    tempUnit: imp ? '°F' : '°C',
+    precipUnit: imp ? 'in' : 'mm',
+  };
+}
+
+// Dew point (°C) from air temperature (°C) and relative humidity (%), Magnus formula with the
+// Alduchov-Eskridge constants; accurate to about 0.1 °C between -40 and 50 °C.
+export function dewPoint(t, rh) {
+  const a = 17.625, b = 243.04;
+  const g = Math.log(Math.max(rh, 1) / 100) + (a * t) / (b + t);
+  return (b * g) / (a - g);
+}
+
 export function fmt(units) {
   const imp = units === 'imperial';
   return {

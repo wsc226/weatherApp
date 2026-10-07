@@ -3,6 +3,7 @@ import { fmt, compass, wallTime } from './units.js';
 import { WeatherScene } from './scene.js';
 import { Timeline } from './timeline.js';
 import { mountWaterCycle } from './waterCycle.js';
+import { ForecastCharts } from './charts.js';
 
 const $ = id => document.getElementById(id);
 const store = {
@@ -49,8 +50,11 @@ try {
 
 const timeline = new Timeline({
   range: $('tl-range'), play: $('tl-play'), back: $('tl-back'), fwd: $('tl-fwd'), speed: $('tl-speed'),
-  onChange: i => render(i),
+  onChange: i => { render(i); charts.setIndex(i); },
 });
+
+// Clicking or arrow-keying the charts moves the timeline, which moves everything else.
+const charts = new ForecastCharts($('charts'), { onSelect: i => { timeline.pause(); timeline.goto(i); } });
 
 function render(i) {
   if (!fc) return;
@@ -71,6 +75,7 @@ function render(i) {
   $('scene-alt').textContent = `${when}: ${d.label}, ${f.temp(h.temperature_2m[i])}, wind from the ${compass(h.wind_direction_10m[i])} at ${f.wind(h.wind_speed_10m[i])}.`;
   const rows = [
     ['Temperature', f.temp(h.temperature_2m[i])],
+    ['Dew point', f.temp(h.dew_point_2m[i])],
     ['Humidity', f.percent(h.relative_humidity_2m[i])],
     ['Pressure', f.pressure(h.pressure_msl[i])],
     ['Wind', `${f.wind(h.wind_speed_10m[i])} from ${compass(h.wind_direction_10m[i])}`],
@@ -112,6 +117,7 @@ async function load() {
   fc = data;
   status(msg);
   $('updated').textContent = describeSource(fc);
+  charts.setData(fc.hourly, units, fc.timezone_abbreviation);
   timeline.setLength(fc.hourly.time.length, currentHourIndex(fc));
 }
 
@@ -137,7 +143,7 @@ $('search').addEventListener('submit', async e => {
 
 document.querySelectorAll('input[name=units]').forEach(r => {
   r.checked = r.value === units;
-  r.addEventListener('change', () => { units = r.value; store.set('units', units); render(timeline.i); map?.setUnits(units); });
+  r.addEventListener('change', () => { units = r.value; store.set('units', units); render(timeline.i); charts.setUnits(units); map?.setUnits(units); });
 });
 
 async function loadLessons() {

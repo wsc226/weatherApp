@@ -1,6 +1,7 @@
 // Data layer: Open-Meteo geocoding + forecast, cached in localStorage so reloads, tabs, and
 // small map pans reuse data instead of spending the school network's shared request budget.
 import { API, CACHE_MINUTES, GRID_MAX_POINTS } from './config.js';
+import { dewPoint } from './units.js';
 
 const PREFIX = 'wmc:';
 const MAX_AGE_KEEP_MS = 7 * 24 * 3600e3; // stale copies are kept this long as an offline fallback
@@ -86,11 +87,21 @@ export async function searchCity(name) {
 export async function getForecast(lat, lon) {
   const p = new URLSearchParams({
     latitude: lat.toFixed(2), longitude: lon.toFixed(2), timezone: 'auto', forecast_days: '3',
-    current: 'temperature_2m,weather_code',
-    hourly: 'temperature_2m,relative_humidity_2m,pressure_msl,precipitation,cloud_cover,wind_speed_10m,wind_direction_10m,weather_code,is_day',
+    current: 'temperature_2m', // only its timestamp is used; keeps the variable count at 11
+    hourly: 'temperature_2m,dew_point_2m,relative_humidity_2m,pressure_msl,precipitation,cloud_cover,wind_speed_10m,wind_direction_10m,weather_code,is_day',
   });
   const r = await getJSON(`${API.forecast}?${p}`, CACHE_MINUTES.forecast);
-  return { ...r.data, fetchedAt: r.fetchedAt, stale: r.stale, error: r.error };
+  return withDewPoint({ ...r.data, fetchedAt: r.fetchedAt, stale: r.stale, error: r.error });
+}
+
+// Fill in dew point from temperature and humidity when the data lacks it
+// (demo data, or forecasts saved before dew point was requested).
+export function withDewPoint(fc) {
+  const h = fc.hourly;
+  if (!h.dew_point_2m || h.dew_point_2m.length !== h.time.length) {
+    h.dew_point_2m = h.temperature_2m.map((t, i) => +dewPoint(t, h.relative_humidity_2m[i]).toFixed(1));
+  }
+  return fc;
 }
 
 // Index of the last hourly step at or before "now" (ISO strings sort lexicographically).
@@ -180,18 +191,23 @@ export function demoForecast(now = new Date()) {
   for (let i = 0; i < n; i++) {
     const d = new Date(start.getTime() + i * 3600e3);
     time.push(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:00`);
+    // A front passes: pressure falls for ~14 hours, rain arrives as humidity nears 100%,
+    // then pressure rises and drier air follows.
     const h = d.getHours(), wet = i > 20 && i < 30;
-    H.temperature_2m.push(+(12 + 6 * Math.sin((h - 9) / 24 * 2 * Math.PI)).toFixed(1));
-    H.relative_humidity_2m.push(wet ? 90 : 60);
-    H.pressure_msl.push(wet ? 1007 : 1015);
-    H.precipitation.push(wet ? 2.5 : 0);
-    H.cloud_cover.push(wet ? 100 : 40);
+    const rain = wet ? [0.4, 1.2, 2.5, 4, 3, 1.5, 0.6, 0.2, 0.1][i - 21] : 0;
+    const p = i < 8 ? 1016 : i <= 22 ? 1016 - (i - 8) * 0.8 : i <= 30 ? 1004.8 : Math.min(1018, 1004.8 + (i - 30) * 0.4);
+    const rh = i < 10 ? 60 : i <= 20 ? 60 + (i - 10) * 3 : wet ? 96 : Math.max(50, 90 - (i - 30) * 2);
+    H.temperature_2m.push(+(12 + 6 * Math.sin((h - 9) / 24 * 2 * Math.PI) - (i > 30 ? 2 : 0)).toFixed(1));
+    H.relative_humidity_2m.push(rh);
+    H.pressure_msl.push(+p.toFixed(1));
+    H.precipitation.push(rain);
+    H.cloud_cover.push(wet ? 100 : i > 14 && i <= 20 ? 80 : 40);
     H.wind_speed_10m.push(wet ? 24 : 12);
-    H.wind_direction_10m.push(wet ? 230 : 280);
-    H.weather_code.push(wet ? 63 : 2);
+    H.wind_direction_10m.push(wet ? 200 : i > 30 ? 300 : 230);
+    H.weather_code.push(wet ? (rain >= 2.5 ? 63 : 61) : i > 14 && i <= 20 ? 3 : 2);
     H.is_day.push(h >= 7 && h < 19 ? 1 : 0);
   }
-  return { demo: true, timezone_abbreviation: '', current: { time: time[0] }, hourly: { time, ...H }, fetchedAt: now.getTime() };
+  return withDewPoint({ demo: true, timezone_abbreviation: '', current: { time: time[0] }, hourly: { time, ...H }, fetchedAt: now.getTime() });
 }
 
 // WMO weather codes -> plain-English label + scene type.

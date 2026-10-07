@@ -18,7 +18,7 @@ Weather-science learning app for **secondary students (US, Canada; English)**. O
 The owner has Gemini (Nano Banana 2) and ChatGPT and will generate images. **Do not add cartoonish SVG art.** Write prompts in `docs/IMAGE_PROMPTS.md`, save images to `assets/images/` (WebP, under ~200 KB, no text baked in), and use the current SVG/canvas visuals only as placeholders.
 
 ## Tests
-- `npm test` (Node's built-in runner, no dependencies) covers `units.js`, `data.js`, and `map.js` pure logic. Run it before every commit; also try `TZ=Pacific/Auckland npm test` when touching time code.
+- `npm test` (Node's built-in runner, no dependencies) covers the pure logic in `units.js`, `data.js`, `map.js`, and `charts.js`. Run it before every commit; also try `TZ=Pacific/Auckland npm test` when touching time code.
 - Keep browser-only code (DOM, canvas, Leaflet) out of module top level so modules stay importable in Node.
 
 ## Rate limits

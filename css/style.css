@@ -30,6 +30,12 @@
   --brand: #0f2436;       /* header band */
   --on-brand: #f3efe6;
   --shadow: 0 1px 2px rgba(19, 32, 47, .06), 0 4px 16px rgba(19, 32, 47, .05);
+  /* Chart series: first three slots of a CVD-validated categorical palette, checked against
+     --surface in both themes (dataviz validate_palette.js, all pairs). Precip sits below 3:1
+     on white, so the charts always carry a tooltip and a table view. */
+  --series-temp: #eb6834;
+  --series-dew: #2a78d6;
+  --series-precip: #1baf7a;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -38,6 +44,7 @@
     --line: #26374a; --primary: #62b8d4; --primary-hover: #82c8df; --on-primary: #06202a;
     --primary-soft: #16303d; --accent: #f0a24a; --accent-soft: #33250f; --focus: #f5a623;
     --brand: #08111a; --on-brand: #e8edf2; --shadow: none;
+    --series-temp: #d95926; --series-dew: #3987e5; --series-precip: #199e70;
     color-scheme: dark;
   }
 }
@@ -98,10 +105,57 @@ fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 20px; }
 .timeline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
 .timeline input[type=range] { flex: 1 1 160px; }
 .timeline button { min-width: 44px; padding: 10px; }
-.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 18px 0 0; }
+.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; margin: 18px 0 0; }
 .readout div { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
 .readout dt { color: var(--muted); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .readout dd { margin: 2px 0 0; font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Forecast charts */
+.charts-heading { margin-top: 28px; }
+.charts { margin-top: 8px; }
+.chart-summary { margin: 0 0 10px; max-width: 70ch; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .9rem; color: var(--muted); margin-bottom: 4px; }
+.chart-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.key { display: inline-block; width: 16px; height: 2px; border-radius: 1px; flex: none; }
+.key-temp { background: var(--series-temp); }
+.key-dew { background: var(--series-dew); }
+.key-pres { background: var(--ink); }
+.key-prec { background: var(--series-precip); height: 8px; width: 8px; border-radius: 2px; }
+.chart-frame { position: relative; }
+.chart-svg { display: block; width: 100%; height: auto; overflow: visible; cursor: crosshair; touch-action: pan-y; }
+.chart-svg:focus-visible { outline-offset: 4px; }
+.c-title { font: 600 14px var(--sans); fill: var(--ink); }
+.c-hint { font: 13px var(--sans); fill: var(--muted); }
+.c-tick { font: 12px var(--sans); fill: var(--muted); font-variant-numeric: tabular-nums; }
+.c-day-label { font-weight: 600; fill: var(--ink); }
+.c-end { font: 600 12px var(--sans); fill: var(--muted); }
+.c-grid line { stroke: var(--line); stroke-width: 1; }
+.c-grid .c-day { stroke: var(--muted); stroke-opacity: .45; }
+.c-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.c-temp { stroke: var(--series-temp); fill: var(--series-temp); }
+.c-dew { stroke: var(--series-dew); fill: var(--series-dew); }
+.c-pres { stroke: var(--ink); fill: var(--ink); }
+.c-line.c-temp, .c-line.c-dew, .c-line.c-pres { fill: none; }
+.c-bar { fill: var(--series-precip); }
+.c-cursor line { stroke: var(--primary); stroke-width: 2; }
+.c-dot { stroke: var(--surface); stroke-width: 2; }
+.c-cross { stroke: var(--muted); stroke-width: 1; pointer-events: none; }
+.chart-tip {
+  position: absolute; z-index: 2; min-width: 190px; padding: 8px 12px; pointer-events: none;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow);
+  font-size: .9rem;
+}
+.chart-tip p { margin: 0; display: flex; align-items: center; gap: 8px; }
+.chart-tip .tip-time { font-weight: 600; margin-bottom: 4px; }
+.chart-tip strong { font-variant-numeric: tabular-nums; min-width: 4.5em; }
+.chart-tip span:last-child { color: var(--muted); }
+.chart-table { margin-top: 12px; }
+.chart-table summary { cursor: pointer; color: var(--primary); font-weight: 600; }
+.table-scroll { overflow-x: auto; max-height: 360px; margin-top: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.table-scroll table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.table-scroll th, .table-scroll td { padding: 6px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+.table-scroll th[scope=row], .table-scroll thead th:first-child { text-align: left; }
+.table-scroll thead th { position: sticky; top: 0; background: var(--surface-2); }
 
 /* Lessons */
 .cards { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
