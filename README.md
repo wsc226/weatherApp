@@ -13,6 +13,10 @@ python3 -m http.server 8000
 
 ES modules need an HTTP server; opening `index.html` directly from disk will not work.
 
+## Publish on GitHub Pages
+
+`.github/workflows/pages.yml` runs the tests and publishes the site on every push to the default branch. One-time setup in the repo's **Settings → Pages**: set **Source** to **GitHub Actions**. Pages on a private repository needs a paid GitHub plan; on a free plan the repository must be public. The published site is public either way.
+
 ## Tests
 
 ```sh
